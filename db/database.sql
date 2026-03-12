@@ -77,3 +77,11 @@ CREATE TABLE applications (
     FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE,
     FOREIGN KEY (seeker_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+-- Add a Company
+INSERT INTO companies (employer_id, name, description, location, verified, logo) 
+VALUES (1, 'TechBridge Solutions', 'Leading tech provider', 'Makati City', 1, 'techbridge.png');
+
+-- Add a Job
+INSERT INTO jobs (company_id, category_id, title, description, location, work_type, job_type, salary_min, salary_max, tags) 
+VALUES (1, 1, 'Frontend Developer', 'Join our team...', 'Makati City', 'Hybrid', 'Full-time', 35000, 55000, '["PWD-Friendly", "Fresh Graduate"]');
