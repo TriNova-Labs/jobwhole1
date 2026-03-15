@@ -1,0 +1,58 @@
+/* assets/css/companies.css */
+
+.company-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #F3F4F6;
+    background-color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    cursor: pointer; /* Feedback that the card is clickable */
+    position: relative;
+}
+
+/* The "Lift" and Shadow effect - Matching image_3df181.png */
+.company-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
+    border-color: #CCFBF1; 
+}
+
+/* Logo Box Transition */
+.logo-box {
+    transition: all 0.3s ease;
+}
+
+/* Turn logo box solid teal on hover - Matching image_3df181.png */
+.company-card:hover .logo-box {
+    background-color: #0D9488 !important; /* Teal-600 */
+    color: #FFFFFF !important;
+}
+
+/* Title color transition */
+.company-title {
+    transition: color 0.3s ease;
+    color: #111827; /* Gray-900 */
+}
+
+.company-card:hover .company-title {
+    color: #0F766E; /* Teal-700 */
+}
+
+/* Meta icon colors on hover */
+.company-card i {
+    transition: color 0.3s ease;
+}
+
+.company-card:hover i.fa-location-dot,
+.company-card:hover i.fa-users {
+    color: #14B8A6; /* Teal-500 */
+}
+
+/* Text Truncation */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+}

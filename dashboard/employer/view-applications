@@ -1,0 +1,37 @@
+<?php
+session_start();
+require_once "../../includes/db.php"; // Adjust path to reach your db.php
+
+// Ensure only logged-in employers can see this
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'employer') {
+    header("Location: ../auth/login.php");
+    exit();
+}
+
+$employer_id = $_SESSION['user_id'];
+
+try {
+    // THIS IS WHERE YOUR SQL GOES
+    $sql = "SELECT 
+                a.id as app_id, 
+                a.applied_at, 
+                a.status, 
+                a.message, 
+                a.resume_path,
+                u.first_name, 
+                u.last_name, 
+                j.title as job_title
+            FROM applications a
+            JOIN users u ON a.seeker_id = u.id
+            JOIN jobs j ON a.job_id = j.id
+            WHERE j.company_id = ? 
+            ORDER BY a.applied_at DESC";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$employer_id]); // The ? is replaced by the logged-in employer's ID
+    $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+    die("Database error: " . $e->getMessage());
+}
+?>

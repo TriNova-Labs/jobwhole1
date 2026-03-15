@@ -1,46 +1,63 @@
 <?php
-// 1. Database Connection and Session Initialization
-require_once '../includes/db.php'; 
+// ob_start() prevents errors if there is accidental whitespace in included files
+ob_start();
 session_start();
+require_once '../includes/db.php'; 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = trim($_POST['email']);
     $password = $_POST['password'];
 
     try {
-        // 2. Fetch user from the database by email
+        // 1. Fetch user from the database
         $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
         $stmt->execute([$email]);
         $user = $stmt->fetch();
 
-        // 3. Verify Password and Account Status
+        // 2. Verify Password
         if ($user && password_verify($password, $user['password'])) {
             
-            // 4. Store user data in Session variables for the header
+            // 3. Store essential data in Session
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['first_name'] = $user['first_name'];
             $_SESSION['last_name'] = $user['last_name'];
-            $_SESSION['account_type'] = $user['account_type']; // 'user', 'employer', or 'admin'
+            $_SESSION['account_type'] = $user['account_type'];
 
-            // 5. Redirect based on user role
+            // 4. Security: Prevent browser from caching the dashboard
+            header("Cache-Control: no-cache, no-store, must-revalidate"); 
+            header("Pragma: no-cache"); 
+            header("Expires: 0");
+
+            // 5. Role-Based Redirection
             if ($user['account_type'] === 'employer') {
-                header("Location: ../dashboard_employer.php");
+                // If it's an employer, send to their specific dashboard
+                $target = "../dashboard/employer/employer.php";
             } else {
-                header("Location: ../index.php");
+                // Regular users or job seekers go to the main index
+                $target = "../index.php";
             }
+
+            // Dual-Action Redirect (PHP + JavaScript Fallback)
+            header("Location: " . $target);
+            echo "<script>window.location.href='" . $target . "';</script>";
             exit();
 
         } else {
-            // Redirect back with error message if credentials fail
-            header("Location: ../login.php?error=invalid_credentials");
+            // 6. Failed Login: Redirect back to login.php with error code
+            header("Location: login.php?error=invalid");
             exit();
         }
 
     } catch (PDOException $e) {
-        die("Login error: " . $e->getMessage());
+        // Log the error and show a user-friendly message
+        error_log("Login error: " . $e->getMessage());
+        die("A technical error occurred. Please try again later.");
     }
 } else {
-    header("Location: ../login.php");
+    // If someone tries to access this file directly without POSTing
+    header("Location: login.php");
     exit();
 }
+
+ob_end_flush();
 ?>
